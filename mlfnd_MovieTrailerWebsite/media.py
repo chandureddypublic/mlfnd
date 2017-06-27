@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+# standard library imports
+import webbrowser
+
+# third party imports for movie webpage
+#  n/a
+# local application/library specific imports
+#  n/a
+
 """       media:
             Creates Movie Class to hold following movie specific information:
                         1.title, 2. storyline, 3.poster_image_url,
@@ -14,14 +22,6 @@ __version__ = "0.0.1"
 __maintainer__ = "Chandra SRK"
 __email__ = ""
 __status__ = "Alpha"
-
-# standard library imports
-import webbrowser
-
-# third party imports for movie webpage
-#  n/a
-# local application/library specific imports
-#  n/a
 
 
 #  Class Defition for Movie
