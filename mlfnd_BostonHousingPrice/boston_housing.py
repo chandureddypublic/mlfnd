@@ -22,7 +22,7 @@
 # 
 # Run the code cell below to load the Boston housing dataset, along with a few of the necessary Python libraries required for this project. You will know the dataset loaded successfully if the size of the dataset is reported.
 
-# In[16]:
+# In[2]:
 
 
 # Import libraries necessary for this project
@@ -67,7 +67,7 @@ print "Boston housing dataset has {} data points with {} variables each.".format
 # - Calculate the minimum, maximum, mean, median, and standard deviation of `'MEDV'`, which is stored in `prices`.
 #   - Store each calculation in their respective variable.
 
-# In[17]:
+# In[3]:
 
 
 # TODO: Minimum price of the data
@@ -108,7 +108,7 @@ print "Standard deviation of prices: ${:,.2f}".format(std_price)
 # * Would you expect a neighborhood that has an `'LSTAT'` value(percent of lower class workers) of 15 have home prices be worth more or less than a neighborhood that has an `'LSTAT'` value of 20?
 # * Would you expect a neighborhood that has an `'PTRATIO'` value(ratio of students to teachers) of 10 have home prices be worth more or less than a neighborhood that has an `'PTRATIO'` value of 15?
 
-# In[18]:
+# In[4]:
 
 
 # Draw plotting the actual variables against the prices, and adding a trendline, 
@@ -137,6 +137,33 @@ for col in features.columns:
 # 
 # 
 
+# In[5]:
+
+
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(1, 1, 1)
+n, bins, patches = ax1.hist(np.log(data.RM), bins = 20)
+ax1.set_title('RM Log Transformation')
+ax1.set_xlabel('RM')
+ax1.set_ylabel('Frequency')
+
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(1, 1, 1)
+n, bins, patches = ax2.hist(np.log(data.LSTAT), bins = 20)
+ax2.set_title('LSTAT Log Transformation')
+ax2.set_xlabel('LSTAT')
+ax2.set_ylabel('Frequency')
+
+fig3 = plt.figure()
+ax3 = fig3.add_subplot(1, 1, 1)
+n, bins, patches = ax3.hist(np.log(data.PTRATIO), bins = 20)
+ax3.set_title('PTRATIO Log Transformation')
+ax3.set_xlabel('PTRATIO')
+ax3.set_ylabel('Frequency')
+
+
+# Note: Used log-transformation to deal with skewed data of RM, LSTAT, PTRATIO
+
 # ----
 # 
 # ## Developing a Model
@@ -151,7 +178,7 @@ for col in features.columns:
 # - Use `r2_score` from `sklearn.metrics` to perform a performance calculation between `y_true` and `y_predict`.
 # - Assign the performance score to the `score` variable.
 
-# In[19]:
+# In[6]:
 
 
 # TODO: Import r2_score
@@ -181,7 +208,7 @@ def performance_metric(y_true, y_predict):
 # 
 # Run the code cell below to use the `performance_metric` function and calculate this model's coefficient of determination.
 
-# In[20]:
+# In[7]:
 
 
 # Calculate the performance of this model
@@ -198,7 +225,13 @@ print "Model has a coefficient of determination, R^2, of {:.3f}.".format(score)
 # * R2 score between 0 and 1 indicates the extent to which the dependent variable is predictable. An 
 # * R2 score of 0.40 means that 40 percent of the variance in Y is predictable from X.
 
-# **Answer:** Model has a coefficient of determination, R^2, of 0.923.  ie 92.3 percent of the variance in Y is predictable from X.
+# **Answer:**
+# 
+#     Model has a coefficient of determination, R^2, of 0.923.  
+#     This indicates 92.3% of variation is explained by the target variable and it is reasonably high.
+#     As only five points considered here to evaluate the performace, we cannot confirm Model performs well
+#     for all possible data sets.
+# 
 
 # ### Implementation: Shuffle and Split Data
 # Your next implementation requires that you take the Boston housing dataset and split the data into training and testing subsets. Typically, the data is also shuffled into a random order when creating the training and testing subsets to remove any bias in the ordering of the dataset.
@@ -209,7 +242,7 @@ print "Model has a coefficient of determination, R^2, of {:.3f}.".format(score)
 #   - Set the `random_state` for `train_test_split` to a value of your choice. This ensures results are consistent.
 # - Assign the train and testing splits to `X_train`, `X_test`, `y_train`, and `y_test`.
 
-# In[21]:
+# In[8]:
 
 
 # Import 'train_test_split'
@@ -243,7 +276,7 @@ print "Training and testing split was successful."
 # 
 # Run the code cell below and use these graphs to answer the following question.
 
-# In[22]:
+# In[9]:
 
 
 # Produce learning curves for varying training set sizes and maximum depths
@@ -259,8 +292,8 @@ vs.ModelLearning(features, prices)
 # Think about the pros and cons of adding more training points based on if the training and testing curves are converging.
 
 # **Answer: **
-#     **max_depth = 1 Graph **: 
-#     
+# 
+#     max_depth = 1 Graph: 
 #           Testing score(green line) increases with the number of training points.
 #           But testing score increases only upto 0.4, which is very low score value.
 #           This indicates this model does not generalize well for new/unseen data sets.
@@ -270,13 +303,12 @@ vs.ModelLearning(features, prices)
 #           This indicates This model does not seem to fit the data well.
 #                     
 #           Thus, we can say this model is facing a high bias problem. 
-#           Consequently, having more training points would not benefit the model as the model is underfitting the dataset.
+#           Consequently, having more training points would not benefit the model as the model under fit the dataset.
 #           Instead, one should increase the model complexity to better fit the dataset.
 #           Morever, the testinging score has reached a plateau suggesting the model may not improve from adding 
 #           more training points.
 # 
-#     **max_depth = 3 Graph **: 
-#     
+#     max_depth = 3 Graph: 
 #           Testing score(green line) increases with the number of training points.
 #           But testing score increases  upto 0.8, which is high score value comparatively
 #           This indicates this model does generalize well for new/unseen data sets.
@@ -287,11 +319,9 @@ vs.ModelLearning(features, prices)
 #                     
 #           Thus, we can say this model seems no high bias or high variance problem.
 #           Model fits and generalizes well.
-#           Consequently, having more training points would not benefit the model as the model is underfitting the dataset.
-#           More training points might help it become an even more ideal model.
+#           Consequently, having more training points would benefit the model to become idle one.
 #           
-#      **max_depth = 6 Graph **: 
-#     
+#      max_depth = 6 Graph: 
 #           Testing score(green line) increases with the number of training points.
 #           But testing score increases  upto 0.75, which is not so high score value comparatively
 #           This indicates this model does not generalize well for new/unseen data sets.
@@ -302,12 +332,9 @@ vs.ModelLearning(features, prices)
 #                     
 #           Thus, we can say this model to be a high variance problem.
 #           Model Overfitting and not generalizes well.
-#           Consequently, having more training points would  benefit the model as the model is Overfitting the dataset.
-#           More training points might help it become an even more ideal model.  
+#           Consequently, having more training points might benefit the model.        
 #           
-#           
-#        **max_depth = 10 Graph **: 
-#     
+#        max_depth = 10 Graph: 
 #           Testing score(green line) increases with the number of training points.
 #           But testing score increases  upto 0.7, which is not so high score value comparatively
 #           This indicates this model does not generalize well for new/unseen data sets.
@@ -318,20 +345,13 @@ vs.ModelLearning(features, prices)
 #                     
 #           Thus, we can say this model to be a very high variance problem.
 #           Model Overfitting and not generalizes well.
-#           Consequently, having more training points would  benefit the model as the model is Overfitting the dataset.
-#           More training points might not help as this model to be a very high variance problem.      
-# 
-# 
-# 
-# 
-# 
 
 # ### Complexity Curves
 # The following code cell produces a graph for a decision tree model that has been trained and validated on the training data using different maximum depths. The graph produces two complexity curves — one for training and one for validation. Similar to the **learning curves**, the shaded regions of both the complexity curves denote the uncertainty in those curves, and the model is scored on both the training and validation sets using the `performance_metric` function.  
 # 
 # ** Run the code cell below and use this graph to answer the following two questions Q5 and Q6. **
 
-# In[23]:
+# In[10]:
 
 
 vs.ModelComplexity(X_train, y_train)
@@ -345,9 +365,28 @@ vs.ModelComplexity(X_train, y_train)
 
 # **Answer: **
 # 
-# Decision tree(max depth 1) : R^2 is almost 0.4, at this stage further additing more data points also model maynot peform well.
 # 
-# Decision tree(max depth 10): The training error is very low, but validation is leveling out with high error.we have a case of overfitting.
+#     High variance models have a gap between the training and testing scores. 
+#     This is because it is able to fit the model well but unable to generalize well 
+#     resulting in a high training score but low test score.
+#     
+#     High bias models have have a small or no gap between the training and testing scores.
+#     This is because it is unable to fit the model well and unable to generalize well
+#     resulting in both scores converging to a similar low score.
+# 
+# 
+# Decision tree(max depth 1) : 
+#         Testing score of Low (~0.4),Training score of Low (~0.4) and observed small or no gap between
+#         the training and testing scores. 
+#         This is of High bias model because it is unable to fit the model well and unable to generalize
+#         well resulting in both scores converging to a similar low score.
+#         At this stage further additing more data points also model maynot peform well.
+# 
+# Decision tree(max depth 10): 
+#         Testing score of High (~0.7),  Training score of LOw(~1.0) and observed substantial gap between
+#         the training and testing scores
+#         This is of High variance model because it is fitting data set well and not generalize well.
+# 
 
 # ### Question 6 - Best-Guess Optimal Model
 # * Which maximum depth do you think results in a model that best generalizes to unseen data? 
@@ -420,7 +459,7 @@ vs.ModelComplexity(X_train, y_train)
 #   - Pass the variables `'regressor'`, `'params'`, `'scoring_fnc'`, and `'cv_sets'` as parameters to the object. 
 #   - Assign the `GridSearchCV` object to the `'grid'` variable.
 
-# In[25]:
+# In[12]:
 
 
 # Import 'make_scorer', 'DecisionTreeRegressor', and 'GridSearchCV'
@@ -468,7 +507,7 @@ def fit_model(X, y):
 # 
 # Run the code block below to fit the decision tree regressor to the training data and produce an optimal model.
 
-# In[26]:
+# In[13]:
 
 
 # Fit the training data to the model using grid search
@@ -499,7 +538,7 @@ print "Parameter 'max_depth' is {} for the optimal model.".format(reg.get_params
 # 
 # Run the code block below to have your optimized model make predictions for each client's home.
 
-# In[27]:
+# In[14]:
 
 
 # Produce a matrix for client data
@@ -514,11 +553,10 @@ for i, price in enumerate(reg.predict(client_data)):
 
 # **Answer: **
 # 
-# Predicted selling price for Client 1's home: $411,096.00
-# 
-# Predicted selling price for Client 2's home: $219,961.54
-# 
-# Predicted selling price for Client 3's home: $921,900.00
+#     Recommend Price as follows:
+#         Client 1: 411,000
+#         Client 2: 219,900
+#         Client 3: 921,900
 # 
 
 # Pro tip: Assess Reasonableness of Prediction using NearestNeighbors
@@ -527,7 +565,7 @@ for i, price in enumerate(reg.predict(client_data)):
 #     You can then contrast your results with the closest neighbours, the ones that have similar characteristics.
 # 
 
-# In[34]:
+# In[15]:
 
 
 from sklearn.neighbors import NearestNeighbors
@@ -551,15 +589,43 @@ for i in client_data:
     print "The predicted {} nearest neighbors price for home {} is: ${:,.2f}".format(num_neighbors,index, val)
 
 
+# Based on nearest neighbors prices, Recommend Price as follows:
+# 
+#         Client 1: 399,420
+#         Client 2: 196,770
+#         Client 3: 870,450
+
+# Based on Data Exploration:
+# 
+#         Minimum price: $105,000.00
+#         Maximum price: $1,024,800.00
+#         Mean price: $454,342.94
+#         Median price $438,900.00
+#         Standard deviation of prices: $165,171.13
+
+# Conclusions:
+#     The prices are rounded up to the nearest hundred as the prices in the dataset are all rounded to the nearest hundred.
+#     The house prices of client 1 and client 2 are below the mean and median prices of Data Explortion.
+#     Client 1 prices are because of average poverty level and student-to-teacher ratio.
+#     Client 2 prices are because of high poverty level and student-to-teacher ratio.
+#     Client 3 prices are because of Low poverty level and student-to-teacher ratio.
+#     client 3 prices are way above the mean and median price Data Explortion. 
+
 # ### Sensitivity
 # An optimal model is not necessarily a robust model. Sometimes, a model is either too complex or too simple to sufficiently generalize to new data. Sometimes, a model could use a learning algorithm that is not appropriate for the structure of the data given. Other times, the data itself could be too noisy or contain too few samples to allow a model to adequately capture the target variable — i.e., the model is underfitted. 
 # 
 # **Run the code cell below to run the `fit_model` function ten times with different training and testing sets to see how the prediction for a specific client changes with respect to the data it's trained on.**
 
-# In[35]:
+# In[16]:
 
 
 vs.PredictTrials(features, prices, fit_model, client_data)
+
+
+# In[17]:
+
+
+features.describe()
 
 
 # ### Question 11 - Applicability
