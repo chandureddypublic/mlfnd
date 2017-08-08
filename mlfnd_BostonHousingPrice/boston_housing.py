@@ -425,6 +425,16 @@ vs.ModelComplexity(X_train, y_train)
 # 
 # ** Hint: ** When explaining the Grid Search technique, be sure to touch upon why it is used,  what the 'grid' entails and what the end goal of this method is. To solidify your answer, you can also give an example of a parameter in a model that can be optimized using this approach.
 
+# **Answer: **
+# 
+#    Grid search technique:
+#            allows to define a grid of parameters.
+#            exhaustively tries every combination of the provided hyper-parameter values in order to find the best model.
+#            allows to easily evaluate validation error and pick the best set of parameters to employ.
+#            allows to find the highest cross-validation accuracy that matches with the corresponding parameters
+#            that optimizes the learning algorithm.
+#            have time complexity for h parameters is O(n^h).
+
 # ### Question 8 - Cross-Validation
 # 
 # * What is the k-fold cross-validation training technique? 
@@ -434,9 +444,6 @@ vs.ModelComplexity(X_train, y_train)
 # **Hint:** When explaining the k-fold cross validation technique, be sure to touch upon what 'k' is, how the dataset is split into different parts for training and testing and the number of times it is run based on the 'k' value.
 # 
 # When thinking about how k-fold cross validation helps grid search, think about the main drawbacks of grid search which are hinged upon **using a particular subset of data for training or testing** and how k-fold cv could help alleviate that. You can refer to the [docs](http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation) for your answer.
-
-# **Answer: **
-# Grid search is a generalized algorithm that iterates over each combination of parameter values. In a programmer's eye, it's a nested "for" loop, with one loop corresponding to each parameter in question. When it comes to creating a learning model, grid search automatically combs over the parameters we want to explore, e.g. max depth in a decision tree. We can easily evaluate validation error and pick the best set of parameters to employ. A downside is time complexity, which for h parameters is O(n^h).
 
 # **Answer: **
 # 
