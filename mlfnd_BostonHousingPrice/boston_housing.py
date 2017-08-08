@@ -42,7 +42,7 @@ import warnings
 def warning_supress():
     warnings.warn("deprecated", DeprecationWarning)
 
-with warnings.catch_warnings():
+with warnings.catch_warnings() as w:
     warnings.simplefilter("ignore")
     warning_supress()
 
@@ -123,9 +123,12 @@ for col in features.columns:
     # This plots a trendline with the regression parameters computed earlier. 
     # We should plot this after the dots or it will be covered by the dots themselves
     ax.plot(features[col], fit[0] * features[col] + fit[1], color='blue', linewidth=3)
-    plt.title('PRICES vs  '+ str(col)) # title here
-    plt.xlabel(col) # label here
-    plt.ylabel('PRICES') # label here
+    # Display Title
+    plt.title('PRICES vs  '+ str(col))
+    # Display X-axis Label
+    plt.xlabel(col)
+    # Display Y-axis Label
+    plt.ylabel('PRICES')
 
 
 # **Answer: **
@@ -227,11 +230,21 @@ print "Model has a coefficient of determination, R^2, of {:.3f}.".format(score)
 
 # **Answer:**
 # 
-#     Model has a coefficient of determination, R^2, of 0.923.  
-#     This indicates 92.3% of variation is explained by the target variable and it is reasonably high.
-#     As only five points considered here to evaluate the performace, we cannot confirm Model performs well
-#     for all possible data sets.
+#     Model has a coefficient of determination(R^2) of 0.923, 
+#     This indicates using this model 92.3 percentage of the target variable can be explained by the features
+#     ie 92.3% of variation in dependent variable can be predicted from independent variable, which is fairly good fit.
+#     
+#     But note that R^2 does not indicate whether:
+#         the independent variables are a cause of the changes in the dependent variable;
+#         omitted-variable bias exists;
+#         the correct regression was used;
+#         the most appropriate set of independent variables has been chosen;
+#         there is collinearity present in the data on the explanatory variables;
+#         the model might be improved by using transformed versions of the existing set of independent variables;
+#         there are enough data points to make a solid conclusion.
 # 
+#     Hence we cannot rely completely on coefficient of determination(R^2) to make any statistical conclusions.
+#     If we assume above drawbacks are not present then we can say this model is fairly good fit.
 
 # ### Implementation: Shuffle and Split Data
 # Your next implementation requires that you take the Boston housing dataset and split the data into training and testing subsets. Typically, the data is also shuffled into a random order when creating the training and testing subsets to remove any bias in the ordering of the dataset.
@@ -305,7 +318,7 @@ vs.ModelLearning(features, prices)
 #           Thus, we can say this model is facing a high bias problem. 
 #           Consequently, having more training points would not benefit the model as the model under fit the dataset.
 #           Instead, one should increase the model complexity to better fit the dataset.
-#           Morever, the testinging score has reached a plateau suggesting the model may not improve from adding 
+#           Morever, the testing score has reached a plateau suggesting the model may not improve from adding 
 #           more training points.
 # 
 #     max_depth = 3 Graph: 
@@ -364,8 +377,7 @@ vs.ModelComplexity(X_train, y_train)
 # **Hint:** High bias is a sign of underfitting(model is not complex enough to pick up the nuances in the data) and high variance is a sign of overfitting(model is by-hearting the data and cannot generalize well). Think about which model(depth 1 or 10) aligns with which part of the tradeoff.
 
 # **Answer: **
-# 
-# 
+#     
 #     High variance models have a gap between the training and testing scores. 
 #     This is because it is able to fit the model well but unable to generalize well 
 #     resulting in a high training score but low test score.
@@ -380,13 +392,17 @@ vs.ModelComplexity(X_train, y_train)
 #         the training and testing scores. 
 #         This is of High bias model because it is unable to fit the model well and unable to generalize
 #         well resulting in both scores converging to a similar low score.
-#         At this stage further additing more data points also model maynot peform well.
+#         At this stage further adding more data points also model maynot peform well.
+#         
+#       Note: When the model is trained with a maximum depth of 1, model suffer from high bias.
 # 
 # Decision tree(max depth 10): 
-#         Testing score of High (~0.7),  Training score of LOw(~1.0) and observed substantial gap between
+#         Testing score of High (~0.7),  Training score of Low(~1.0) and observed substantial gap between
 #         the training and testing scores
 #         This is of High variance model because it is fitting data set well and not generalize well.
-# 
+#         At this stage further adding more data points make  model peform well.
+#         
+#        Note: When the model is trained with a maximum depth of 10, model suffer from high variance
 
 # ### Question 6 - Best-Guess Optimal Model
 # * Which maximum depth do you think results in a model that best generalizes to unseen data? 
@@ -409,9 +425,6 @@ vs.ModelComplexity(X_train, y_train)
 # 
 # ** Hint: ** When explaining the Grid Search technique, be sure to touch upon why it is used,  what the 'grid' entails and what the end goal of this method is. To solidify your answer, you can also give an example of a parameter in a model that can be optimized using this approach.
 
-# **Answer: **
-# Grid search is a generalized algorithm that iterates over each combination of parameter values. In a programmer's eye, it's a nested "for" loop, with one loop corresponding to each parameter in question. When it comes to creating a learning model, grid search automatically combs over the parameters we want to explore, e.g. max depth in a decision tree. We can easily evaluate validation error and pick the best set of parameters to employ. A downside is time complexity, which for h parameters is O(n^h).
-
 # ### Question 8 - Cross-Validation
 # 
 # * What is the k-fold cross-validation training technique? 
@@ -421,6 +434,9 @@ vs.ModelComplexity(X_train, y_train)
 # **Hint:** When explaining the k-fold cross validation technique, be sure to touch upon what 'k' is, how the dataset is split into different parts for training and testing and the number of times it is run based on the 'k' value.
 # 
 # When thinking about how k-fold cross validation helps grid search, think about the main drawbacks of grid search which are hinged upon **using a particular subset of data for training or testing** and how k-fold cv could help alleviate that. You can refer to the [docs](http://scikit-learn.org/stable/modules/cross_validation.html#cross-validation) for your answer.
+
+# **Answer: **
+# Grid search is a generalized algorithm that iterates over each combination of parameter values. In a programmer's eye, it's a nested "for" loop, with one loop corresponding to each parameter in question. When it comes to creating a learning model, grid search automatically combs over the parameters we want to explore, e.g. max depth in a decision tree. We can easily evaluate validation error and pick the best set of parameters to employ. A downside is time complexity, which for h parameters is O(n^h).
 
 # **Answer: **
 # 
@@ -586,30 +602,37 @@ index = 0
 for i in client_data:
     val=nearest_neighbor_price(i)
     index += 1
-    print "The predicted {} nearest neighbors price for home {} is: ${:,.2f}".format(num_neighbors,index, val)
+    print "The predicted {} nearest neighbors price for Client {} Home is: ${:,.2f}".format(num_neighbors,index, val)
 
 
-# Based on nearest neighbors prices, Recommend Price as follows:
+# Based on Assess Reasonableness of Prediction using NearestNeighbors, it is evidant that customers can recommended to sell their Houses as predicted below:
 # 
-#         Client 1: 399,420
-#         Client 2: 196,770
-#         Client 3: 870,450
+#         Client 1: 411,000
+#         Client 2: 219,900
+#         Client 3: 921,900
+# Predicted prices are slightly higer than nearest neighbors price.
 
 # Based on Data Exploration:
 # 
-#         Minimum price: $105,000.00
-#         Maximum price: $1,024,800.00
-#         Mean price: $454,342.94
-#         Median price $438,900.00
-#         Standard deviation of prices: $165,171.13
+#     Minimum price: $105,000.00
+#     Maximum price: $1,024,800.00
+#     Mean price: $454,342.94
+#     Median price $438,900.00
+#     Standard deviation of prices: $165,171.13
 
 # Conclusions:
 #     The prices are rounded up to the nearest hundred as the prices in the dataset are all rounded to the nearest hundred.
-#     The house prices of client 1 and client 2 are below the mean and median prices of Data Explortion.
-#     Client 1 prices are because of average poverty level and student-to-teacher ratio.
-#     Client 2 prices are because of high poverty level and student-to-teacher ratio.
-#     Client 3 prices are because of Low poverty level and student-to-teacher ratio.
-#     client 3 prices are way above the mean and median price Data Explortion. 
+#     
+#     The house prices of client 1 and client 2 are below the mean and median prices of Data Explortion findings.
+#     client 3 prices are way above the mean and median price of Data Explortion findings.
+#     
+#     Client 2 prices are lower side because of lesser rooms,high Neighborhood poverty level(%) and high student-to-teacher ratio.
+#     
+#     Client 1 prices are average because of average rooms, average Neighborhood poverty level(%) and average student-to-teacher ratio.
+#     
+#     Client 3 prices are more because of more rooms, less Neighborhood poverty level(%) and more student-to-teacher ratio.
+#    
+#     The model predicts well and recommends prices for client houses. 
 
 # ### Sensitivity
 # An optimal model is not necessarily a robust model. Sometimes, a model is either too complex or too simple to sufficiently generalize to new data. Sometimes, a model could use a learning algorithm that is not appropriate for the structure of the data given. Other times, the data itself could be too noisy or contain too few samples to allow a model to adequately capture the target variable — i.e., the model is underfitted. 
@@ -620,12 +643,6 @@ for i in client_data:
 
 
 vs.PredictTrials(features, prices, fit_model, client_data)
-
-
-# In[17]:
-
-
-features.describe()
 
 
 # ### Question 11 - Applicability
@@ -639,7 +656,7 @@ features.describe()
 # - Would data collected in an urban city like Boston be applicable in a rural city?
 # - Is it fair to judge the price of an individual home based on the characteristics of the entire neighborhood?
 
-# **Answer: **  Definetely data collected in 1978 cann't be used to predict accurate rates now. May be lot of other features need to be consideredfor better prediction.
+# **Answer: **  Definetely data collected in 1978 cann't be used to predict accurate rates now. May be lot of other features need to be considered for better prediction.
 # This Model is not robust enough because it is not considered all the features.
 # No data collected in an urban city like Boston cannot be applicable in a rural city
 # Yes, it is fair to judge the price of an individual home based on the characteristics of the entire neighborhood.This is one feature only but addtional features to be considered for better prediction.
