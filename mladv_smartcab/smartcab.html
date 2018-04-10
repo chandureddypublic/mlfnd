@@ -11839,8 +11839,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Import the visualization code</span>
-<span class="kn">import</span> <span class="nn">visuals</span> <span class="kn">as</span> <span class="nn">vs</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Import the visualization code</span>
+<span class="kn">import</span> <span class="nn">visuals</span> <span class="k">as</span> <span class="nn">vs</span>
 
 <span class="c1"># Pretty display for notebooks</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
@@ -11970,7 +11970,7 @@ Run the agent.py file after setting the flags from projects/smartcab folder inst
 <div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_no-learning&#39; log file from the initial simulation results</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_no-learning&#39; log file from the initial simulation results</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_no-learning.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -12023,30 +12023,14 @@ Run the agent.py file after setting the flags from projects/smartcab folder inst
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
 <ol>
-<li>The driving agent was making bad decision almost 45% of the time at the beginning, which results to 7.5% major accidents. This gradually dropped to about 38% of bad decisions resulting to less than 6% major accidents.</li>
+<li>The driving agent was making bad decision almost 45% of the time at the beginning, which results to 7.5% major accidents. This gradually dropped to about 38% of bad decisions resulting to less than 6% major accidents. Major &amp; minor accidents results in about 0.0528 each, resulting % of bad decisions cause accidents: 0.0528*2 / 0.45 = 0.235; ie 23.5%.</li>
 <li>Given that the agent is driving randomly and also is not learning, the observed result doesnot make sense, since we are are consistantly late more than 90% of the time.</li>
 <li>The rewards that the agent is seems to be consistant was around -5. Though agent takes lesser Bad decisions also it got penalyzed because of not much drop in major accidents. This is because of random rewards.</li>
 <li>As the number of trials increases, the rolling rate of reliablility does not change overall and stays a constant around 10%, while total bad actions that leads to both major and minor accidents and traffic violations seems to be constant over time. So not much change in reliability, slight improvement in safety, but not signicant enough to receive anything higher than an F grade.</li>
 <li>As it is right now, this <em>Smartcab</em> would not be considered safe nor reliable for its passengers.  Its actions being random, results in accidents in 5% of times both major and minor, 10-20% of the time with major and minor triffic violations.  It is also consistantly late 90% of the time.</li>
 </ol>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <hr>
 <h2 id="Inform-the-Driving-Agent">Inform the Driving Agent<a class="anchor-link" href="#Inform-the-Driving-Agent">&#182;</a></h2><p>The second step to creating an optimized Q-learning driving agent is defining a set of states that the agent can occupy in the environment. Depending on the input, sensory data, and additional variables available to the driving agent, a set of states can be defined for the agent so that it can eventually <em>learn</em> what action it should take when occupying a state. The condition of <code>'if state then action'</code> for each state is called a <strong>policy</strong>, and is ultimately what the driving agent is expected to learn. Without defining states, the driving agent would never understand which action is most optimal -- or even what environmental variables and conditions it cares about!</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Identify-States">Identify States<a class="anchor-link" href="#Identify-States">&#182;</a></h3><p>Inspecting the <code>'build_state()'</code> agent function shows that the driving agent is given the following data from the environment:</p>
 <ul>
 <li><code>'waypoint'</code>, which is the direction the <em>Smartcab</em> should drive leading to the destination, relative to the <em>Smartcab</em>'s heading.</li>
@@ -12084,6 +12068,11 @@ Most relevant features  for agent to learn both <strong>safety</strong> and <str
 <li><em>inputs - light:</em> - Smartcab must know the color of the lights to learn that it will be penalized for being in <em>idle</em> state when the light is <em>green</em>, or going through intersections with <em>red</em> traffic lights which will cause traffic violations and even accidents.</li>
 <li><em>inputs - left:</em> - This parameter is to indicate if there is a vehicle present on the left and its intented action/direction: <em>None</em>, <em>forward</em>, <em>left</em> or <em>right</em>.  If there is a vehicle present and the <em>inputs: light</em> is <em>red</em>, then making a right turn maybe allow if there is no vehicle present or its intention is not to go <em>forward</em>.  If there is a vehicle present and the <em>inputs: light</em> is <em>red</em>, then taking a right action will result in a major accident if there is also a vehicle on the left with the intent to go forward.</li>
 <li><em>inputs: oncoming</em> - the Smartcab must know if there is a vehicle coming in the opposite direction when it is trying to make a left turn, so as to not go into a road with oncoming traffic when deciding to turn left.  If the agent decides to drive into <em>oncoming</em> traffic, then it will cause either a minor traffic violation or, if there is a vehicle present, a major accident.</li>
+</ol>
+<p>Features that are not relevant and reason is specified below:</p>
+<ol>
+<li><em>inputs - right</em>: This parameter is to indicate if there are vehicles present on the right and its intented action/direction(None, forward, left or right). If vehicle present and the inputs: light is red, the Smartcab agent should not go forward or left in any case, so knowing if there is a car on the right does not provide any additional information. Similarly, making a right turn on red, does not require any information on if there is a vehicle on the right, since the lane that the right vehicle is on is separate for the direction of travel. As for the inputs: light is green cases, this is only valid for the case of the smartcab going forward, but this means the Smartcab agent has the right-of-way, so any accident would be the fault of the vehicle on the right making a decision that is not in-line with triffic laws.</li>
+<li><em>deadline</em>:  Deadline is not relevent because I do not  think Smartcab agent needs to know the deadline, but can learn about it in the reward it receives as it builds its Q table. Setting it this way may help improve on its reliability by causing minor safety violations to major accidents. This is something to avoid, but I think we want the agent to learn it on its own. In addtion doing it this way significantly reduces the Q table size and makes the learning algorthm more efficient.</li>
 </ol>
 
 </div>
@@ -12250,8 +12239,7 @@ The possible combinations based on Features,Actions (F1 x F2 x F3 x F4 x F5)are 
 <li><code>'learning'</code> - Set this to <code>'True'</code> to tell the driving agent to use your Q-Learning implementation.</li>
 </ul>
 <p>In addition, use the following decay function for $\epsilon$:</p>
-<p>$$ \epsilon_{t+1} = \epsilon_{t} - 0.05, \hspace{10px}\textrm{for trial number } t$$</p>
-<p>If you have difficulty getting your implementation to work, try setting the <code>'verbose'</code> flag to <code>True</code> to help debug. Flags that have been set here should be returned to their default setting when debugging. It is important that you understand what each flag does and how it affects the simulation!</p>
+$$ \epsilon_{t+1} = \epsilon_{t} - 0.05, \hspace{10px}\textrm{for trial number } t$$<p>If you have difficulty getting your implementation to work, try setting the <code>'verbose'</code> flag to <code>True</code> to help debug. Flags that have been set here should be returned to their default setting when debugging. It is important that you understand what each flag does and how it affects the simulation!</p>
 <p>Once you have successfully completed the initial Q-Learning simulation, run the code cell below to visualize the results. Note that log files are overwritten when identical simulations are run, so be careful with what log file is being loaded!</p>
 
 </div>
@@ -12262,7 +12250,7 @@ The possible combinations based on Features,Actions (F1 x F2 x F3 x F4 x F5)are 
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_default-learning&#39; file from the default Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_default-learning&#39; file from the default Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_default-learning.csv&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -12355,8 +12343,7 @@ The possible combinations based on Features,Actions (F1 x F2 x F3 x F4 x F5)are 
 <li><code>'tolerance'</code> - set this to some small value larger than 0 (default was 0.05) to set the epsilon threshold for testing.</li>
 </ul>
 <p>Furthermore, use a decaying function of your choice for $\epsilon$ (the exploration factor). Note that whichever function you use, it <strong>must decay to </strong><code>'tolerance'</code><strong> at a reasonable rate</strong>. The Q-Learning agent will not begin testing until this occurs. Some example decaying functions (for $t$, the number of trials):</p>
-<p>$$ \epsilon = a^t, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px}\epsilon = \frac{1}{t^2}\hspace{50px}\epsilon = e^{-at}, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px} \epsilon = \cos(at), \textrm{for } 0 &lt; a &lt; 1$$
-You may also use a decaying function for $\alpha$ (the learning rate) if you so choose, however this is typically less common. If you do so, be sure that it adheres to the inequality $0 \leq \alpha \leq 1$.</p>
+$$ \epsilon = a^t, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px}\epsilon = \frac{1}{t^2}\hspace{50px}\epsilon = e^{-at}, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px} \epsilon = \cos(at), \textrm{for } 0 &lt; a &lt; 1$$<p>You may also use a decaying function for $\alpha$ (the learning rate) if you so choose, however this is typically less common. If you do so, be sure that it adheres to the inequality $0 \leq \alpha \leq 1$.</p>
 <p>If you have difficulty getting your implementation to work, try setting the <code>'verbose'</code> flag to <code>True</code> to help debug. Flags that have been set here should be returned to their default setting when debugging. It is important that you understand what each flag does and how it affects the simulation!</p>
 <p>Once you have successfully completed the improved Q-Learning simulation, run the code cell below to visualize the results. Note that log files are overwritten when identical simulations are run, so be careful with what log file is being loaded!</p>
 
@@ -12368,9 +12355,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;1. improved Q-Learning simulation Resultsc[e,a,t,trials]--&gt; [1.0/(t**2),0.9,0.0005,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1. improved Q-Learning simulation Resultsc[e,a,t,trials]--&gt; [1.0/(t**2),0.9,0.0005,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12416,9 +12403,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;2. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2),0.9,0.0001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2),0.9,0.0001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12464,9 +12451,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;3. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2),0.5,0.0005,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2),0.5,0.0005,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12512,9 +12499,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;4. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2),0.5,0.0001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2),0.5,0.0001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12560,9 +12547,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;5. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2 + a*t),0.5,0.0001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2 + a*t),0.5,0.0001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12608,9 +12595,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;6. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2 - a*t),0.5,0.0001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [1.0/(t**2 - a*t),0.5,0.0001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12656,9 +12643,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;7. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t),0.5,0.001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;7. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t),0.5,0.001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12704,9 +12691,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;8. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t),0.01,0.0001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;8. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t),0.01,0.0001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12752,9 +12739,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;9. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t)/(t**2) ,0.5,0.001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;9. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t)/(t**2) ,0.5,0.001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12800,9 +12787,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;10. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t)/(t**2),0.01,0.0001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;10. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t)/(t**2),0.01,0.0001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12848,9 +12835,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;11. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t) ,0.01,0.001,50]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;11. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t) ,0.01,0.001,50]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12896,9 +12883,9 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 <div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Load the &#39;sim_improved-learning&#39; file from the improved Q-Learning simulation</span>
 <span class="n">vs</span><span class="o">.</span><span class="n">plot_trials</span><span class="p">(</span><span class="s1">&#39;sim_improved-learning.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="s2">&quot;12. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t) ,0.01,0.001,100]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;12. improved Q-Learning simulation Results[e,a,t,trials]--&gt; [cost(a*t) ,0.01,0.001,100]&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13084,12 +13071,18 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 </tbody>
 </table>
 <ol>
-<li>Tried various decaying function for epsilon and based on the results <code>epsilon=ABS(COS(at))</code> seems fine as exploration factor out of few tried as specified in above table.</li>
-<li>Around 150 training trials completed by agent before begining testing</li>
-<li>Used <code>epsilon = ABS(COS(at))</code> with epsilon-tolerance of 0.001 and alpha of 0.01, with testing trails 100. when comparaed with with others this exploration function , Alpha,Tolerance gives better results interms of Safety,Reliability.
-4.Safety,Reliability factors improves from F,C to A+,B.
-5.Safety,reliability rating are now A+,B with the optimized Q-Learning agent.  This is much better when compared to default Q-Learning agent and the basic driving agents Hence it can be concluded that the learnign agent has learned appropriate policy to perform better.
-6.Smartcab agent's A+ ratings for safety and B rating for reliability after 100 tests trials are fine. </li>
+<li><p>Obsreved Agent behaviour with various combination of epsilons, alpha and tolerance values, refer above table,charts for outcomes. Based on the results observed, <code>epsilon=ABS(COS(at))</code> seems fine as as the final exploration factor. after Analysis of all results, bad actions, violations, accidents, rate of reliability  do not behave the same across the basic driving agent, default agent and the final optimized Q-Learning agent. Bad actions, violations, accidents all dramatically went down over time for the final optimized Q-Learning agent even when compared to the default Q-Learning agent which was clearly superior to the basic driving agent. Also, the final optimized Q-Learning agent's rolling rate of reliability went from around 40% dropped down to 0% while it was optimizing on reducing bad actions and then came back up to almost 90% at the end of around 110 trial training runs. Where as default Q-Learning agent's rolling rate of reliablity of 10% to a peak of 20% then down to 10% and the constent 10% from the basic driving agent, a vast improvement. &lt;/b&gt;</p>
+</li>
+<li><p>Almost 150 training trials are pefomed prior to final optimized Q-Learning agent started testing. This number makes sense given that epsilon=ABS(COS(at)) with alpha = 0.01 and t starting at 1 at each training trial with an epsilon-tolerance of 0.001. So, COS(0.01x157) = COS(1.5) = 0.0 &lt; 0.001. &lt;/b&gt;</p>
+</li>
+<li><p>Used <code>epsilon = ABS(COS(at))</code> with epsilon-tolerance of 0.001 and alpha of 0.01, with testing trails 100. when comparaed with with others this exploration function , Alpha,Tolerance gives better results interms of Safety,Reliability. &lt;/b&gt;</p>
+</li>
+<li><p>Safety,Reliability factors improves from F,C to A+,B. &lt;/b&gt;</p>
+</li>
+<li><p>Safety,reliability rating are now A+,B with the optimized Q-Learning agent.  This is much better when compared to default Q-Learning agent and the basic driving agents Hence it can be concluded that the learnign agent has learned appropriate policy to perform better. &lt;/b&gt;</p>
+</li>
+<li><p>Smartcab agent's A+ ratings for safety and B rating for reliability after 100 tests trials are fine. &lt;/b&gt;</p>
+</li>
 </ol>
 
 </div>
@@ -13184,8 +13177,7 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
                      -- right : 0.03
                      -- left : -0.97</code></p>
 
-<pre><code>In the below state smartcab moved forward because of higher Q-Value.
-             `left_green_right_left
+<pre><code>             `left_green_right_left
                  -- forward : 0.01
                  -- None : 0.00
                  -- right : 0.00
@@ -13201,13 +13193,15 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
                  -- left : 0.05`
 
 </code></pre>
-<p>4) I think in the below state, smartcab can move left.</p>
+<p>4) There are some states where the policy is different from the optimal policy.</p>
 
-<pre><code>            `right_green_right_right
-                     -- forward : 0.00
-                     -- None : 0.00
-                     -- right : 0.01
-                     -- left : 0.00`</code></pre>
+<pre><code>            `forward_red_right_left
+                 -- forward : 0.00
+                 -- None : 0.01
+                 -- right : 0.00
+                 -- left : 0.00`
+</code></pre>
+<p>In this case, the optimal action should taking right, however, the driving agent choose to wait. It won’t cause accident but will delay the arriving time. This needs more trails to learn the optimal Q-table.</p>
 
 </div>
 </div>
@@ -13239,7 +13233,8 @@ You may also use a decaying function for $\alpha$ (the learning rate) if you so 
 
 </div>
 </div>
-</div>
+</div>1. The Smartcab has no knowledge of its (X,Y) location in the grid world, so cannot be bias to move away from that to another (X,Y) location that it also does not know about. It can only go towards its destination based on directions given by its environment alone at its current state.
+2. Incase of environment,we dont know the destination coordinate and the destination is not same at all the trials (it keeps on changing with the trials), if we take each coordinates as a state then our input size would be very large and hence it is not feasible to propogate rewards to agent from destination.
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
