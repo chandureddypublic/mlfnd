@@ -13122,86 +13122,59 @@ $$ \epsilon = a^t, \textrm{for } 0 &lt; a &lt; 1 \hspace{50px}\epsilon = \frac{1
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong></p>
-<p>1) I guess optimal policy would be if intent is to drive right when redlight with no oncoming traffic. Possible actions are: <em>None</em>, <em>forward</em>, <em>left</em> and <em>right</em>:</p>
-<table>
-<thead><tr>
-<th style="text-align:center">N</th>
-<th style="text-align:center">state</th>
-<th style="text-align:center">actions</th>
-<th style="text-align:center">policy</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:center">{'forward', 'red', None, None}</td>
-<td style="text-align:center">None</td>
-<td style="text-align:center">Correct</td>
-</tr>
-<tr>
-<td style="text-align:center">2</td>
-<td style="text-align:center">{'forward', 'red', None, None}</td>
-<td style="text-align:center">forward</td>
-<td style="text-align:center">incorrect</td>
-</tr>
-<tr>
-<td style="text-align:center">3</td>
-<td style="text-align:center">{'forward', 'red', None, None}</td>
-<td style="text-align:center">left</td>
-<td style="text-align:center">incorrect</td>
-</tr>
-<tr>
-<td style="text-align:center">4</td>
-<td style="text-align:center">{'forward', 'red', None, None}</td>
-<td style="text-align:center">right</td>
-<td style="text-align:center">optimal</td>
-</tr>
-</tbody>
-</table>
+<p>Some of the the optimal policies would be, where state is represenetd as tuple ('waypoint', 'light', 'left', 'oncoming'):</p>
 
-<pre><code>`sim_improved-learning.txt` contains below log information.
-
-    `forward_red_None_None
-             -- forward : -2.60
-             -- None : 1.11
-             -- right : 0.23
-             -- left : -3.27`
-
-    In this state, the optimized Q-Learning agent would go **`right`** instead of **`idling`** because of  comparatively high Q-value.
+<pre><code>1. When waypoint is forward
+                        - If light is green, go forward.
+                        - Otherwise, wait.
+2. When waypoint is left
+                        - If light is green, and oncoming traffic is moving left or no oncoming traffic, go left.
+                        - If light is red, wait. 
+3. When waypoint is right
+                        - If there is car coming from left, then the agent should wait.
+                        - Otherwise, agent can go to right.- Otherwise go forward.
 
 </code></pre>
-<p>2) In the below state smartcab moved forward because of higher Q-Value.
-                <code>left_green_None_right
-                     -- forward : 0.09
-                     -- None : -0.05
-                     -- right : 0.03
-                     -- left : -0.97</code></p>
+<p>Example 1: optimal policy</p>
 
-<pre><code>             `left_green_right_left
-                 -- forward : 0.01
-                 -- None : 0.00
-                 -- right : 0.00
-                 -- left : 0.00`
+<pre><code>    '{'forward', 'green', 'forward', 'forward'}
+         -- forward :  0.04
+         -- None    : -0.05
+         -- right   :  0.00
+         -- left    : -0.21'
 
-</code></pre>
-<p>3) In the below state smartcab moved right becuse of highest Q-Value, which is inturn because of optimal learning</p>
-
-<pre><code>            `forward_green_left_None
-                 -- forward : 0.10
-                 -- None : -0.35
-                 -- right : 0.24
-                 -- left : 0.05`
+    In this example, if the driving agent should be going forward,  light is green, and the left and oncoming cars
+    are driving forward, then the optimal action is to drive forward. Left car will stay idle because there should 
+    be a red light. If the driving agent were to turn left, it could cause an accident, hence the penalty of -0.21.
+    This is as per expectation only and optimal policy. 
 
 </code></pre>
-<p>4) There are some states where the policy is different from the optimal policy.</p>
+<p>Example 2: optimal policy</p>
 
-<pre><code>            `forward_red_right_left
-                 -- forward : 0.00
-                 -- None : 0.01
-                 -- right : 0.00
-                 -- left : 0.00`
+<pre><code>    '{'forward",'green','left','forward'}
+         -- forward :  0.06
+         -- None    : -0.10
+         -- right   :  0.00
+         -- left    : -0.38'
+
+    In this example, smartcab should drive forward. The light is green. The car on the left intends to turn left
+    while the oncoming car intends to go forward. The driving agent can safely drive forward. It is rewarded for 
+    that action with a reward equal to 0.06. The smartcab will be penalized(-0.10) if it stays idle.
+    This is as per expectation only and optimal policy.
+
 </code></pre>
-<p>In this case, the optimal action should taking right, however, the driving agent choose to wait. It won’t cause accident but will delay the arriving time. This needs more trails to learn the optimal Q-table.</p>
+<p>Example 3: sub-optimal policy</p>
+
+<pre><code>    '{'left', 'green', 'None', 'right'}
+         -- forward : 0.09
+         -- None : -0.05
+         -- right : 0.03
+         -- left : -0.97'
+
+    In this example, smartcab intends to go left. The light is green. Because the oncoming car intend
+    to turn right. But the policy would make the car to turn forward because the forward action has
+    the highest Q value. While the smartcab will be safe in such a maneuver, it will not be efficient.
+    This policy is sub-optimal and May be some more trails may be required to attain optimal policy.</code></pre>
 
 </div>
 </div>
